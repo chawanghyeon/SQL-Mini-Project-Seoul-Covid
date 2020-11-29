@@ -1,0 +1,94 @@
+CONNECT SCOVID/SEOUL
+
+set linesize 1000
+set pagesize 5000
+
+----------------- 이사를 계획하는 A씨.
+
+--Q1. 이번에 코로나에서 가장 안전한 구에 방을 구해보고자 한다. 정확한 방법이란 없지만, 
+--    가장 확진자 수가 적은 구를 선택해보고자 한다. 어떤 지역을 고르는 것이 좋을까?
+select * from (select 지역, count(*) from seoulcovid group by 지역 order by count(*) asc) where rownum=1;
+
+
+--Q2. 전체를 보니까 잘 모르겠는 A씨. 최근 10일간 가장 조금 늘어난 지역을 알고싶다. 
+select * from
+(select 지역, count(*) as co from seoulcovid where 확진일 between sysdate - 10 and sysdate group by 지역)
+order by co asc;
+
+--Q3. 금천구로 결정한 A씨. 이사를 가려는 지역 안에 어떤 병원이 있는지 알고싶다.
+
+select 사업장명, 진료과목내용명  from seoulhospital where 도로명주소 like '%금천구%';
+
+
+----------------- 서초구에 출근하는 B씨. 서초구는 다른 구에 비해 안전한지 확인해 보고 싶어졌다.
+
+--Q4. 서초구의 확진자 수 확인
+
+select count(*) from seoulcovid where 지역='서초구';
+
+
+--Q5. 10만명당 확진자수 순서 확인
+
+select c.지역, co/인구*100000 , 평균가구원수, one/인구*100000
+from (select 지역, count(연번) as co from seoulcovid group by 지역 order by count(*) asc) c, seoulpopulation p 
+where c.지역=p.구분 
+order by co/인구*100000 asc;
+
+--Q6. 직장인 서초구에서 밥을 먹으려는 B씨. 서초구에서 확진 관련 접촉 지역을 확인해보고자 안다.
+
+select distinct 접촉력
+from seoulcovid
+where 접촉력 like '%서초구%';
+
+
+
+
+
+----------------- 한 의사 C씨는 이번 코로나 사태 관련 파악이 하고 싶어져 몇가지 간단한 계산을 해보고 싶어졌다.
+
+--Q7. 서울시에서 가구별 가구원수가 감염에 의미가 있나?
+
+select c.지역, co/인구*100000 , 평균가구원수, one/인구*100000
+from (select 지역, count(연번) as co from seoulcovid group by 지역 order by count(*) asc) c, seoulpopulation p 
+where c.지역=p.구분 
+order by co/인구*100000 asc;
+
+--Q8. 퇴원하지 않은 환자가 제일 많은 구에 가서 주말에 손을 더하고자 한다. 어디로 가면 좋을까.
+
+select 지역, count(*)
+from seoulcovid
+where 상태!='퇴원'
+group by 지역
+order by count(*) asc;
+
+
+--Q9. 병원 수에 비해 퇴원하지 않은 환자가 제일 많은 구에 가서 주말에 손을 더하고자 한다. 어디로 가면 좋을까.
+
+select 구분, fatality
+from
+(select s.구분, cnumber/mnumber*100 as fatality
+from
+(select 구분, count(관리번호) as mnumber
+from seoulpopulation p, seoulhospital h
+where trim(substr(도로명주소,7,4))=구분
+group by 구분) s,
+(select 지역, count(*) as cnumber
+from seoulcovid
+where 상태!='퇴원'
+group by 지역) c
+where s.구분=c.지역
+order by cnumber/mnumber*100 desc)
+where rownum=1;
+
+
+
+
+
+--Q
+
+--가구수(인구) - 확진 및 퇴원여부
+--확진자
+--병원
+
+
+--Q6. 기울기 
