@@ -6,11 +6,14 @@
 ## SQL Data
  SQL 프로젝트를 진행하려면 데이터가 있어야 합니다. 재웅님이 코로나 관련 프로젝트를 진행하는 거니까 가상 데이터를 만들지 말고 실제로 있는 데이터를 사용해보는 것이 어떻겠냐고 제안하셔서 [공공데이터 포탈](https://www.data.go.kr/)을 사용하여 데이터를 수집했습니다. 데이터를 API를 통해 실시간으로 Json포맷을 받는 것은 테이블을 만들려는 저희의 의도와 맞지 않다고 판단해 데이터 파일을 다운받아 sql포맷으로 변환했습니다.
 
+## 관계도
+![seoulcovid관계도](https://user-images.githubusercontent.com/53591258/100535690-82573500-325e-11eb-9535-fc8ba0805cd2.PNG)
+
 ## SQL Code
 ```
 CREATE TABLE seoulpopulation (
 인구 number (10),
-구분 VARCHAR2 (50) primary key,
+구분 VARCHAR2 (50) constraint seoulpopulation_구분_pk primary key,
 일반가구수 number (10),
 one number (10),
 two number (10),
@@ -22,7 +25,7 @@ seven number (10),
 평균가구원수 number (10, 2)
 );
 ```
-seoulpopulation table 만드는 코드입니다.
+seoulpopulation table 만드는 코드입니다. table 구조는 공공데이터 구조를 기반으로 설계했습니다. seoulpopulation table은 각 구별 인구를 나타내는 table이기 때문에 구를 나타내는 구분을 primary key로 설정했습니다.
 
 ```
 INSERT INTO seoulpopulation(인구,구분,일반가구수,one,two,three,four,five,six,seven,평균가구원수) VALUES (159842, '종로구',62652,24671,16208,11154,7828,2143,505,143,2.2);
@@ -47,7 +50,7 @@ CREATE TABLE seoulcovid (
 노출여부 VARCHAR2 (50)
 );
 ```
-seoulcovid table 만드는 코드입니다.
+seoulcovid table 만드는 코드입니다. table 구조는 공공데이터를 기반으로 설계했습니다. seoulcovid table은 환자에 대한 정보를 나타내는 table입니다. 환자 번호를 primary key로 설정하고 싶었지만 공공데이터에 null값으로 저장되어 있어 연번을 primary key로 설정했습니다. 지역을 seloulpopulation(구분)에서 키를 받아오는 foreign key로 설정했습니다.
 
 ```
 INSERT INTO seoulcovid(연번,확진일,환자번호,국적,환자정보,지역,여행력,접촉력,조치사항,상태,이동경로,등록일,수정일,노출여부) VALUES (7900,'11.24.',NULL,NULL,NULL,'강서구',NULL,'기타 확진자 접촉',NULL,NULL,NULL,'2020-11-25 10:18:53','2020-11-25 10:18:53','Y');
@@ -56,50 +59,50 @@ seoulcovid table INSERT 문장 예시
 
 ```
 CREATE TABLE seoulhospital(
-   개방자치단체코드  NUMBER (38)  NOT NULL 
-  ,관리번호      VARCHAR2 (100) NOT NULL
-  ,인허가일자     DATE  NOT NULL
-  ,인허가취소일자   VARCHAR2 (100)
-  ,영업상태코드    NUMBER (38)  NOT NULL
-  ,영업상태명     VARCHAR2 (100) NOT NULL
-  ,상세영업상태코드  NUMBER (38)  NOT NULL
-  ,상세영업상태명   VARCHAR2 (100) NOT NULL
-  ,폐업일자      DATE 
-  ,휴업시작일자    DATE 
-  ,휴업종료일자    DATE 
-  ,재개업일자     VARCHAR2 (100)
-  ,전화번호      VARCHAR2 (100)
-  ,소재지면적     VARCHAR2 (100)
-  ,소재지우편번호   NUMBER (38) 
-  ,지번주소      VARCHAR2 (110)
-  ,도로명주소     VARCHAR2 (156)
-  ,도로명우편번호   NUMBER (38) 
-  ,사업장명      VARCHAR2 (100) NOT NULL
-  ,최종수정일자    NUMBER (38)  NOT NULL
-  ,데이터갱신구분   VARCHAR2 (100) NOT NULL
-  ,데이터갱신일자   VARCHAR2 (100) NOT NULL
-  ,업태구분명     VARCHAR2 (100) NOT NULL
-  ,좌표정보X     NUMBER (38,22)
-  ,좌표정보Y     NUMBER (38,22)
-  ,의료기관종별명   VARCHAR2 (100)
-  ,의료인수      NUMBER (38) 
-  ,입원실수      NUMBER (38) 
-  ,병상수       NUMBER (38) 
-  ,총면적       NUMBER (18,4)
-  ,진료과목내용    VARCHAR2 (300)
-  ,진료과목내용명   VARCHAR2 (400)
-  ,지정취소일자    VARCHAR2 (60)
-  ,완화의료지정형태  VARCHAR2 (100)
-  ,완화의료담당부서명 VARCHAR2 (100)
-  ,구급차특수     NUMBER (38) 
-  ,구급차일반     NUMBER (38) 
-  ,총인원       VARCHAR2 (100)
-  ,구조사수      VARCHAR2 (100)
-  ,허가병상수     NUMBER (38) 
-  ,최초지정일자    VARCHAR2 (100)
+   개방자치단체코드  NUMBER (38)  NOT NULL,
+   관리번호      VARCHAR2 (100) constraint seoulhospital_관리번호_pk primary key,
+   인허가일자     DATE  NOT NULL,
+   인허가취소일자   VARCHAR2 (100),\
+   영업상태코드    NUMBER (38)  NOT NULL,
+   영업상태명     VARCHAR2 (100) NOT NULL,
+   상세영업상태코드  NUMBER (38)  NOT NULL,
+   상세영업상태명   VARCHAR2 (100) NOT NULL,
+   폐업일자      DATE,
+   휴업시작일자    DATE,
+   휴업종료일자    DATE,
+   재개업일자     VARCHAR2 (100),
+   전화번호      VARCHAR2 (100),
+   소재지면적     VARCHAR2 (100),
+   소재지우편번호   NUMBER (38),
+   지번주소      VARCHAR2 (110),
+   도로명주소     VARCHAR2 (156),
+   도로명우편번호   NUMBER (38),
+   사업장명      VARCHAR2 (100) NOT NULL,
+   최종수정일자    NUMBER (38)  NOT NULL,
+   데이터갱신구분   VARCHAR2 (100) NOT NULL,
+   데이터갱신일자   VARCHAR2 (100) NOT NULL,
+   업태구분명     VARCHAR2 (100) NOT NULL,
+   좌표정보X     NUMBER (38,22),
+   좌표정보Y     NUMBER (38,22),
+   의료기관종별명   VARCHAR2 (100),
+   의료인수      NUMBER (38),
+   입원실수      NUMBER (38),
+   병상수       NUMBER (38),
+   총면적       NUMBER (18,4),
+   진료과목내용    VARCHAR2 (300),
+   진료과목내용명   VARCHAR2 (400),
+   지정취소일자    VARCHAR2 (60),
+   완화의료지정형태  VARCHAR2 (100),
+   완화의료담당부서명 VARCHAR2 (100),
+   구급차특수     NUMBER (38),
+   구급차일반     NUMBER (38),
+   총인원       VARCHAR2 (100),
+   구조사수      VARCHAR2 (100),
+   허가병상수     NUMBER (38),
+   최초지정일자    VARCHAR2 (100)
 );
 ```
-seoulhospital table 만드는 코드입니다.
+seoulhospital table 만드는 코드입니다. table 구조는 공공데이터는 기반으로 설계했습니다. 각 병원을 나타내는 관리번호를 primary key로 설정했습니다. 그리고 반드시 있어야 하는 데이터들을 NOT NULL로 제약조건을 명시했습니다.
 ```
 INSERT INTO seoulhospital(개방자치단체코드,관리번호,인허가일자,인허가취소일자,영업상태코드,영업상태명,상세영업상태코드,상세영업상태명,폐업일자,휴업시작일자,휴업종료일자,재개업일자,전화번호,소재지면적,소재지우편번호,지번주소,도로명주소,도로명우편번호,사업장명,최종수정일자,데이터갱신구분,데이터갱신일자,업태구분명,좌표정보X,좌표정보Y,의료기관종별명,의료인수,입원실수,병상수,총면적,진료과목내용,진료과목내용명,지정취소일자,완화의료지정형태,완화의료담당부서명,구급차특수,구급차일반,총인원,구조사수,허가병상수,최초지정일자) VALUES (3000000,'PHMA220083000034021200001','20080624',NULL,03,'폐업',03,'폐업','20181001',NULL,NULL,NULL,'02-766-2004',NULL,110808,'서울특별시 종로구 돈의동 78번지','서울특별시 종로구 돈화문로9길 26 (돈의동)',03139,'춘원당한방병원',20181001134047,'U','2018-10-03 02:35:18.0','한방병원',199079.009091626,452168.088676879,'한방병원',8,7,31,2182.81,'301 303 304 305 306 307 308 302','한방부인과 침구과 사상체질과 한방재활의학과 한방신경정신과 한방안?이비인후?피부과 한방소아과 한방내과',NULL,NULL,NULL,0,0,NULL,NULL,0,NULL);
 ```
