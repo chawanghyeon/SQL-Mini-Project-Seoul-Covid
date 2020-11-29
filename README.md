@@ -1,10 +1,10 @@
 # Seoul-Covid
 
 ## 프로젝트 주제 선정
- 차왕현과 김재웅 팀 왕재는 SQL프로젝트를 하나 진행하기로 했습니다. 프로젝트 주제를 선정하는 과정에서 제가 요즘 코로나 바이러스가 심각한데 코로나를 주제로 프로젝트를 진행하면 어떻겠냐고 제안했습니다. 재웅님도 평소에 코로나에 대해 관심이 많으셔서 코로나를 주제로 프로젝트를 진행했습니다.
+ 차왕현과 김재웅 팀 왕재는 SQL프로젝트를 하나 진행하기로 했습니다. 프로젝트 주제를 선정하는 과정에서 제가 요즘 코로나 바이러스가 심각한데 코로나를 주제로 프로젝트를 진행하면 어떻겠냐고 제안했습니다. 재웅님도 평소에 코로나에 대해 관심이 많으셔서 코로나를 주제로 프로젝트를 진행했습니다. '코로나에 뭐하지?'라는 서비스가 있다는 가정하에 SQL문장을 만들었습니다.
 
 ## SQL Data
- SQL 프로젝트를 진행하려면 데이터가 있어야 합니다. 재웅님이 코로나 관련 프로젝트를 진행하는 거니까 가상 데이터를 만들지 말고 실제로 있는 데이터를 사용해보는 것이 어떻겠냐고 제안하셔서 공공데이터 포탈을 사용하여 데이터를 수집했습니다. 데이터를 Json포맷으로 받는 것은 테이블을 만들려는 저의의 의도와 맞지 않다고 판단해 데이터 파일을 다운받아 sql포맷으로 변환했습니다.
+ SQL 프로젝트를 진행하려면 데이터가 있어야 합니다. 재웅님이 코로나 관련 프로젝트를 진행하는 거니까 가상 데이터를 만들지 말고 실제로 있는 데이터를 사용해보는 것이 어떻겠냐고 제안하셔서 [공공데이터 포탈](https://www.data.go.kr/)을 사용하여 데이터를 수집했습니다. 데이터를 API를 통해 실시간으로 Json포맷을 받는 것은 테이블을 만들려는 저희의 의도와 맞지 않다고 판단해 데이터 파일을 다운받아 sql포맷으로 변환했습니다.
 
 ## SQL Code
 ```
@@ -121,3 +121,33 @@ seoulhospital table INSERT 문장
 8. 퇴원하지 않은 환자가 제일 많은 구에 가서 주말에 손을 더하고자 한다. 어디로 가면 좋을까?
 9. 병원 수에 비해 퇴원하지 않은 환자가 제일 많은 구에 가서 주말에 손을 더하고자 한다. 어디로 가면 좋을까?
 
+## 답
+1. select * <br/>from (select 지역, count(*) <br/>from seoulcovid <br/>group by 지역 <br/>order by count(*) asc) <br/>where rownum=1;
+2. select * <br/>from (select 지역, count(*) as co <br/>from seoulcovid <br/>where 확진일 between sysdate - 10 and sysdate <br/>group by 지역) <br/>order by co asc;
+3. select 사업장명, 진료과목내용명 <br/>from seoulhospital <br/>where 도로명주소 like '%금천구%';
+4. select count(*) <br/>from seoulcovid <br/>where 지역='서초구';
+5. select c.지역, co/인구*100000 , 평균가구원수, one/인구*100000
+<br/>from (select 지역, count(연번) as co <br/>from seoulcovid <br/>group by 지역 <br/>order by count(*) asc) c, seoulpopulation p 
+<br/>where c.지역=p.구분 
+<br/>order by co/인구*100000 asc;
+6. select distinct 접촉력 <br/>from seoulcovid <br/>where 접촉력 like '%서초구%';
+7. select c.지역, co/인구*100000 , 평균가구원수, one/인구*100000
+<br/>from (select 지역, count(연번) as co <br/>from seoulcovid <br/>group by 지역 <br/>order by count(*) asc) c, seoulpopulation p 
+<br/>where c.지역=p.구분 
+<br/>order by co/인구*100000 asc;
+8. select 지역, count(*) <br/>from seoulcovid <br/>where 상태!='퇴원' <br/>group by 지역 <br/>order by count(*) asc;
+9. select 구분, fatality
+<br/>from
+<span style="color:red">(</span>select s.구분, cnumber/mnumber*100 as fatality
+<br/>from
+<span style="color:yellow">(</span>select 구분, count(관리번호) as mnumber
+<br/>from seoulpopulation p, seoulhospital h
+<br/>where trim(substr(도로명주소,instr(도로명주소, ' ', 1, 1),instr(도로명주소, ' ', 1, 2)-instr(도로명주소, ' ', 1, 1)))=구분
+<br/>group by 구분<span style="color:yellow">)</span> s,
+<span style="color:green">(</span>select 지역, count(*) as cnumber
+<br/>from seoulcovid
+<br/>where 상태!='퇴원'
+<br/>group by 지역<span style="color:green">)</span> c
+<br/>where s.구분=c.지역
+<br/>order by cnumber/mnumber*100 desc<span style="color:red">)</span>
+<br/>where rownum=1;
