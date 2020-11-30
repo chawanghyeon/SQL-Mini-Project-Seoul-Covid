@@ -236,13 +236,13 @@ seoulrestaurant table INSERT 문장 예시입니다.
 9. select 구분, fatality
    from(select s.구분, cnumber/mnumber*100 as fatality
         from(select 구분, count(관리번호) as mnumber
-		from seoulpopulation p, seoulhospital h
-        where trim(substr(도로명주소,instr(도로명주소, ' ', 1, 1),instr(도로명주소, ' ', 1, 2)-instr(도로명주소, ' ', 1, 1)))=구분
-        group by 구분) s,
-	(select 지역, count(*) as cnumber
-        from seoulcovid
-        where 상태!='퇴원'
-        group by 지역) c
+	     from seoulpopulation p, seoulhospital h
+             where trim(substr(도로명주소,instr(도로명주소, ' ', 1, 1),instr(도로명주소, ' ', 1, 2)-instr(도로명주소, ' ', 1, 1)))=구분
+             group by 구분) s,
+	     (select 지역, count(*) as cnumber
+             from seoulcovid
+             where 상태!='퇴원'
+             group by 지역) c
         where s.구분=c.지역
         order by cnumber/mnumber*100 desc)
     where rownum=1;
