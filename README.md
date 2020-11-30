@@ -185,95 +185,73 @@ seoulrestaurant table INSERT 문장 예시입니다.
 
 ## 답
 ```
-1.
-select * 
-  from (select 지역, count(*) 
-	  from seoulcovid 
-		group by 지역 
-		order by count(*) asc) 
-where rownum=1;
-2. 
-select * 
-	from (
-		select 지역, count(*) as co 
-			from seoulcovid 
-		where 확진일 between sysdate - 10 and sysdate group by 지역
-		) 
-order by co asc;
+1. select * 
+   from (select 지역, count(*) 
+         from seoulcovid 
+         group by 지역 
+         order by count(*) asc) 
+   where rownum=1;
+2. select * 
+   from (select 지역, count(*) as co 
+         from seoulcovid 
+         where 확진일 between sysdate - 10 and sysdate 
+         group by 지역) 
+   order by co asc;
+3. select 사업장명, 진료과목내용명 
+   from seoulhospital 
+   where 도로명주소 like '%금천구%';
+4. select count(*) 
+   from seoulcovid 
+   where 지역='서초구';
+5. select c.지역, co/인구*100000 , 평균가구원수, one/인구*100000
+   from (select 지역, count(연번) as co 
+         from seoulcovid 
+         group by 지역 
+         order by count(*) asc) c, seoulpopulation p 
+   where c.지역=p.구분 
+   order by co/인구*100000 asc;
+6. select distinct 접촉력 
+   from seoulcovid
+   where 접촉력 like '%서초구%';
+7. select c.지역, co/인구*100000 , 평균가구원수, one/인구*100000
+   from (select 지역, count(연번) as co 
+         from seoulcovid 
+	 group by 지역 
+	 order by count(*) asc) c, seoulpopulation p 
+   where c.지역=p.구분 
+   order by co/인구*100000 asc;
+8. select 지역, count(*) 
+   from seoulcovid 
+   where 상태!='퇴원' 
+   group by 지역 
+   order by count(*) asc;
+9. select 구분, fatality
+   from(select s.구분, cnumber/mnumber*100 as fatality
+        from(select 구분, count(관리번호) as mnumber
+		from seoulpopulation p, seoulhospital h
+        where trim(substr(도로명주소,instr(도로명주소, ' ', 1, 1),instr(도로명주소, ' ', 1, 2)-instr(도로명주소, ' ', 1, 1)))=구분
+        group by 구분) s,
+	(select 지역, count(*) as cnumber
+        from seoulcovid
+        where 상태!='퇴원'
+        group by 지역) c
+        where s.구분=c.지역
+        order by cnumber/mnumber*100 desc)
+    where rownum=1;
 
-3. 
-select 사업장명, 진료과목내용명 
-	from seoulhospital 
-where 도로명주소 like '%금천구%';
+10. select count(*), substr(지번주소,instr(지번주소, ' ', 1, 1),instr(지번주소, ' ', 1, 2)-instr(지번주소, ' ', 1, 1)) as 구
+    from seoulcovid c, 
+        (select 지번주소 from seoulrestaurant where 사업장명='일식동경') r
+         where trim(substr(지번주소,instr(지번주소, ' ', 1, 1),instr(지번주소, ' ', 1, 2)-instr(지번주소, ' ', 1, 1)))=지역
+    group by r.지번주소;
 
-4. 
-select count(*) 
-	from seoulcovid where 지역='서초구';
-	
-5. 
-select c.지역, co/인구*100000 , 평균가구원수, one/인구*100000
-	from (
-		select 지역, count(연번) as co 
-			from seoulcovid 
-		group by 지역 order by count(*) asc
-		) c, seoulpopulation p 
-where c.지역=p.구분 
-	order by co/인구*100000 asc;
-	
-6. 
-select distinct 접촉력 
-	from seoulcovid 
-where 접촉력 like '%서초구%';
-
-7. 
-select c.지역, co/인구*100000 , 평균가구원수, one/인구*100000
-	from (
-		select 지역, count(연번) as co 
-			from seoulcovid 
-		group by 지역 order by count(*) asc
-		) c, seoulpopulation p 
-where c.지역=p.구분 
-order by co/인구*100000 asc;
-
-8. 
-select 지역, count(*) 
-	from seoulcovid
-where 상태!='퇴원' 
-group by 지역 
-order by count(*) asc;
-
-
-9. 
-select 구분, fatality
-	from(
-	select s.구분, cnumber/mnumber*100 as fatality
-		from(
-		select 구분, count(관리번호) as mnumber
-			from seoulpopulation p, seoulhospital h
-		where trim(substr(도로명주소,instr(도로명주소, ' ', 1, 1),instr(도로명주소, ' ', 1, 2)-instr(도로명주소, ' ', 1, 1)))=구분
-		group by 구분) s,(
-		
-		select 지역, count(*) as cnumber
-			from seoulcovid
-		where 상태!='퇴원'
-		group by 지역) c
-	where s.구분=c.지역
-	order by cnumber/mnumber*100 desc)
-where rownum=1;
-
-10. 
-select count(*), substr(지번주소,instr(지번주소, ' ', 1, 1),instr(지번주소, ' ', 1, 2)-instr(지번주소, ' ', 1, 1)) as 구
-	from seoulcovid c, (select 지번주소 from seoulrestaurant where 사업장명='일식동경') r
-where trim(substr(지번주소,instr(지번주소, ' ', 1, 1),instr(지번주소, ' ', 1, 2)-instr(지번주소, ' ', 1, 1)))=지역
-group by r.지번주소;
-
-11. 
-select h.도로명주소, 사업장명
-	from seoulhospital h, (
-	select 지역
-		from seoulcovid
-	where 접촉력 like '%먹거리 곱창전골%') c
-where trim(substr(h.도로명주소,instr(h.도로명주소, ' ', 1, 1),instr(h.도로명주소, ' ', 1, 2)-instr(h.도로명주소, ' ', 1, 1)))=c.지역;
+11. select h.도로명주소, 사업장명
+    from seoulhospital h, 
+        (select 지역
+         from seoulcovid
+         where 접촉력 like '%먹거리 곱창전골%') c
+    where trim(substr(h.도로명주소,instr(h.도로명주소, ' ', 1, 1),instr(h.도로명주소, ' ', 1, 2)-instr(h.도로명주소, ' ', 1, 1)))=c.지역;
 ```
+
 ## 프로젝트 진행하면서 힘들었던 점
  기존에 있던 파일을 SQL파일로 변환하면서 호환성 문제가 힘들었으며  기존에 있던 데이터는 이미 정리된 데이터여서 좀 더 자유롭게 활용할 방법이 제한되었습니다. 그래서 다음 프로젝트에선 좀 더 자유롭게 생각할 수 있는 방법을 찾아보려고 합니다. 마지막으로 가상 시나리오 9번의 SQL문장을 구현하는데 어려움이 있었습니다. 혼자서 생각했으면 못 했을 부분을 Pair programming을 통해 서로 부족한 부분을 채워 어려움을 해결해 SQL문장을 구현했습니다.
