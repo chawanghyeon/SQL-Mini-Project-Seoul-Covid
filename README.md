@@ -178,6 +178,11 @@ seoulrestaurant table INSERT 문장 예시입니다.
 8.퇴원하지 않은 환자가 제일 많은 구에 가서 주말에 손을 더하고자 한다. 어디로 가면 좋을까?  
 9.병원 수에 비해 퇴원하지 않은 환자가 제일 많은 구에 가서 주말에 손을 더하고자 한다. 어디로 가면 좋을까?  
 
+코로나지만 식당에 가고싶은 D씨. 
+10. 가고자 하는 식당의 지역에 확진자가 어느정도 있는지 알고싶다.
+11. 혹시나 해서 갔던 식당(먹거리 곱창전골)이 확진자가 나왔던 곳인지 알고싶은 D씨. 
+
+
 ## 답
 1. select * <br/>from (select 지역, count(*) <br/>from seoulcovid <br/>group by 지역 <br/>order by count(*) asc) <br/>where rownum=1;
 2. select * <br/>from (select 지역, count(*) as co <br/>from seoulcovid <br/>where 확진일 between sysdate - 10 and sysdate <br/>group by 지역) <br/>order by co asc;
@@ -208,6 +213,15 @@ seoulrestaurant table INSERT 문장 예시입니다.
 <br/>where s.구분=c.지역
 <br/>order by cnumber/mnumber*100 desc<span style="color:red">)</span>
 <br/>where rownum=1;
+
+10. select count(*), substr(지번주소,instr(지번주소, ' ', 1, 1),instr(지번주소, ' ', 1, 2)-instr(지번주소, ' ', 1, 1)) as 구
+from seoulcovid c, (select 지번주소 from seoulrestaurant where 사업장명='일식동경') r
+where trim(substr(지번주소,instr(지번주소, ' ', 1, 1),instr(지번주소, ' ', 1, 2)-instr(지번주소, ' ', 1, 1)))=지역
+group by r.지번주소;
+
+11. select *
+from seoulcovid
+where 접촉력 like '%먹거리 곱창전골%' ;
 
 ## 프로젝트 진행하면서 힘들었던 점
  기존에 있던 파일을 SQL파일로 변환하면서 호환성 문제가 힘들었으며  기존에 있던 데이터는 이미 정리된 데이터여서 좀 더 자유롭게 활용할 방법이 제한되었습니다. 그래서 다음 프로젝트에선 좀 더 자유롭게 생각할 수 있는 방법을 찾아보려고 합니다. 마지막으로 가상 시나리오 9번의 SQL문장을 구현하는데 어려움이 있었습니다. 혼자서 생각했으면 못 했을 부분을 Pair programming을 통해 서로 부족한 부분을 채워 어려움을 해결해 SQL문장을 구현했습니다.
