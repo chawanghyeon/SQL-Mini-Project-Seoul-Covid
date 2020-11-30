@@ -181,7 +181,7 @@ seoulrestaurant table INSERT 문장 예시입니다.
 코로나지만 식당에 가고싶은 D씨.  
 10.가고자 하는 식당의 지역에 확진자가 어느정도 있는지 알고싶다.  
 11.혹시나 해서 갔던 식당(먹거리 곱창전골)이 확진자가 나왔던 곳인지 알고싶은 D씨.  
-
+12. 내 취향의 음식을 먹으러 가는데 이왕 가는거 확진자가 가장 적은 구로 가보고싶은 D씨. 어느 구로 가면 좋을까?
 
 ## 답
 1. select * <br/>from (select 지역, count(*) <br/>from seoulcovid <br/>group by 지역 <br/>order by count(*) asc) <br/>where rownum=1;
@@ -224,6 +224,15 @@ from seoulhospital h, (select 지역
 from seoulcovid
 where 접촉력 like '%먹거리 곱창전골%') c
 where trim(substr(h.도로명주소,instr(h.도로명주소, ' ', 1, 1),instr(h.도로명주소, ' ', 1, 2)-instr(h.도로명주소, ' ', 1, 1)))=c.지역;
+
+12. select * 
+from seoulrestaurant r
+where trim(substr(r.도로명주소,instr(r.도로명주소, ' ', 1, 1),instr(r.도로명주소, ' ', 1, 2)-instr(r.도로명주소, ' ', 1, 1)))=(select 지역
+from (select 지역, count(*) 
+from seoulcovid 
+group by 지역 
+order by count(*) asc)
+where rownum=1) and (select 취향 from seouluser where 이름='D씨')=r.업태구분명;
 
 ## 프로젝트 진행하면서 힘들었던 점
  기존에 있던 파일을 SQL파일로 변환하면서 호환성 문제가 힘들었으며  기존에 있던 데이터는 이미 정리된 데이터여서 좀 더 자유롭게 활용할 방법이 제한되었습니다. 그래서 다음 프로젝트에선 좀 더 자유롭게 생각할 수 있는 방법을 찾아보려고 합니다. 마지막으로 가상 시나리오 9번의 SQL문장을 구현하는데 어려움이 있었습니다. 혼자서 생각했으면 못 했을 부분을 Pair programming을 통해 서로 부족한 부분을 채워 어려움을 해결해 SQL문장을 구현했습니다.
