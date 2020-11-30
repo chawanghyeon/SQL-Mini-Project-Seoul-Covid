@@ -432,7 +432,7 @@ INSERT INTO seoulrestaurant(개방자치단체코드,관리번호,인허가일�
 seoulrestaurant table INSERT example
 
 ## Virtual scenario
-Mr. A planning to move.
+- Mr. A planning to move.
 1. I'm looking for a room in the safest district in Corona this time. There is no exact method, but I would like to choose the district with the least confirmed number of people. Which area would be better to choose?
 2. I can't tell from looking at the whole thing. I would like to know the area that has increased the least in the last 10 days.
 3. Mr. A decided in Geumcheon-gu. I want to know what kind of hospital is in the area where I want to move.
