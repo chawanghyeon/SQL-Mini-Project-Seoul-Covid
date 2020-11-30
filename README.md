@@ -219,9 +219,11 @@ from seoulcovid c, (select 지번주소 from seoulrestaurant where 사업장명=
 where trim(substr(지번주소,instr(지번주소, ' ', 1, 1),instr(지번주소, ' ', 1, 2)-instr(지번주소, ' ', 1, 1)))=지역
 group by r.지번주소;
 
-11. select *
+11. select h.도로명주소, 사업장명
+from seoulhospital h, (select 지역
 from seoulcovid
-where 접촉력 like '%먹거리 곱창전골%' ;
+where 접촉력 like '%먹거리 곱창전골%') c
+where trim(substr(h.도로명주소,instr(h.도로명주소, ' ', 1, 1),instr(h.도로명주소, ' ', 1, 2)-instr(h.도로명주소, ' ', 1, 1)))=c.지역;
 
 ## 프로젝트 진행하면서 힘들었던 점
  기존에 있던 파일을 SQL파일로 변환하면서 호환성 문제가 힘들었으며  기존에 있던 데이터는 이미 정리된 데이터여서 좀 더 자유롭게 활용할 방법이 제한되었습니다. 그래서 다음 프로젝트에선 좀 더 자유롭게 생각할 수 있는 방법을 찾아보려고 합니다. 마지막으로 가상 시나리오 9번의 SQL문장을 구현하는데 어려움이 있었습니다. 혼자서 생각했으면 못 했을 부분을 Pair programming을 통해 서로 부족한 부분을 채워 어려움을 해결해 SQL문장을 구현했습니다.

@@ -83,12 +83,21 @@ where rownum=1;
 
 
 
+코로나지만 식당에 가고싶은 D씨.  
+10. 가고자 하는 식당의 지역에 확진자가 어느정도 있는지 알고싶다.  
+11. 혹시나 해서 갔던 식당(먹거리 곱창전골)이 확진자가 나왔던 곳인지 알고싶은 D씨.   
 
---Q
+10. select count(*), substr(지번주소,instr(지번주소, ' ', 1, 1),instr(지번주소, ' ', 1, 2)-instr(지번주소, ' ', 1, 1)) as 구
+from seoulcovid c, (select 지번주소 from seoulrestaurant where 사업장명='일식동경') r
+where trim(substr(지번주소,instr(지번주소, ' ', 1, 1),instr(지번주소, ' ', 1, 2)-instr(지번주소, ' ', 1, 1)))=지역
+group by r.지번주소;
 
---가구수(인구) - 확진 및 퇴원여부
---확진자
---병원
+
+11.select h.도로명주소, 사업장명
+from seoulhospital h, (select 지역
+from seoulcovid
+where 접촉력 like '%먹거리 곱창전골%') c
+where trim(substr(h.도로명주소,instr(h.도로명주소, ' ', 1, 1),instr(h.도로명주소, ' ', 1, 2)-instr(h.도로명주소, ' ', 1, 1)))=c.지역;
 
 
---Q6. 기울기 
+
