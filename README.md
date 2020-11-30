@@ -163,67 +163,74 @@ INSERT INTO seoulrestaurant(개방자치단체코드,관리번호,인허가일�
 seoulrestaurant table INSERT 문장 예시입니다.
 
 ## 가상 시나리오
-이사를 계획하는 A씨  
-1.이번에 코로나에서 가장 안전한 구에 방을 구해보고자 한다. 정확한 방법이란 없지만, 가장 확진자 수가 적은 구를 선택해보고자 한다. 어떤 지역을 고르는 것이 좋을까?  
-2.전체를 보니까 잘 모르겠는 A씨. 최근 10일간 가장 조금 늘어난 지역을 알고싶다.  
-3.금천구로 결정한 A씨. 이사를 가려는 지역 안에 어떤 병원이 있는지 알고싶다. 
+- 이사를 계획하는 A씨  
+ 1. 이번에 코로나에서 가장 안전한 구에 방을 구해보고자 한다. 정확한 방법이란 없지만, 가장 확진자 수가 적은 구를 선택해보고자 한다. 어떤 지역을 고르는 것이 좋을까?  
+ 2. 전체를 보니까 잘 모르겠는 A씨. 최근 10일간 가장 조금 늘어난 지역을 알고싶다.  
+ 3. 금천구로 결정한 A씨. 이사를 가려는 지역 안에 어떤 병원이 있는지 알고싶다. 
 
-서초구에 출근하는 B씨. 서초구는 다른 구에 비해 안전한지 확인해 보고 싶어졌다.  
-4.서초구의 확진자 수 확인  
-5.10만명당 확진자수 순서 확인  
-6.직장인 서초구에서 밥을 먹으려는 B씨. 서초구에서 확진 관련 접촉 지역을 확인해보고자 한다.  
+- 서초구에 출근하는 B씨. 서초구는 다른 구에 비해 안전한지 확인해 보고 싶어졌다.  
+ 4. 서초구의 확진자 수 확인  
+ 5. 10만명당 확진자수 순서 확인  
+ 6. 직장인 서초구에서 밥을 먹으려는 B씨. 서초구에서 확진 관련 접촉 지역을 확인해보고자 한다.  
 
-한 의사 C씨는 이번 코로나 사태 관련 파악이 하고 싶어져 몇가지 간단한 계산을 해보고 싶어졌다.  
-7.서울시에서 가구별 가구원수가 감염에 의미가 있나?  
-8.퇴원하지 않은 환자가 제일 많은 구에 가서 주말에 손을 더하고자 한다. 어디로 가면 좋을까?  
-9.병원 수에 비해 퇴원하지 않은 환자가 제일 많은 구에 가서 주말에 손을 더하고자 한다. 어디로 가면 좋을까?  
+- 한 의사 C씨는 이번 코로나 사태 관련 파악이 하고 싶어져 몇가지 간단한 계산을 해보고 싶어졌다.  
+ 7. 서울시에서 가구별 가구원수가 감염에 의미가 있나?  
+ 8. 퇴원하지 않은 환자가 제일 많은 구에 가서 주말에 손을 더하고자 한다. 어디로 가면 좋을까?  
+ 9. 병원 수에 비해 퇴원하지 않은 환자가 제일 많은 구에 가서 주말에 손을 더하고자 한다. 어디로 가면 좋을까?  
 
-코로나지만 식당에 가고싶은 D씨.  
-10.가고자 하는 식당의 지역에 확진자가 어느정도 있는지 알고싶다.  
-11.혹시나 해서 갔던 식당(먹거리 곱창전골)이 확진자가 나왔던 곳인지 알고싶은 D씨.  
+- 코로나지만 식당에 가고싶은 D씨.  
+ 10. 가고자 하는 식당의 지역에 확진자가 어느정도 있는지 알고싶다.  
+ 11. 혹시나 해서 갔던 식당(먹거리 곱창전골)이 확진자가 나왔던 곳인지 알고싶은 D씨.  
 
 
 ## 답
-1. select * <br/>from (select 지역, count(*) <br/>from seoulcovid <br/>group by 지역 <br/>order by count(*) asc) <br/>where rownum=1;
-2. select * <br/>from (select 지역, count(*) as co <br/>from seoulcovid <br/>where 확진일 between sysdate - 10 and sysdate <br/>group by 지역) <br/>order by co asc;
-3. select 사업장명, 진료과목내용명 <br/>from seoulhospital <br/>where 도로명주소 like '%금천구%';
-4. select count(*) <br/>from seoulcovid <br/>where 지역='서초구';
+```
+1.
+select * 
+  from (select 지역, count(*) 
+	  from seoulcovid 
+		group by 지역 
+		order by count(*) asc) 
+where rownum=1;
+2. select * from (select 지역, count(*) as co from seoulcovid where 확진일 between sysdate - 10 and sysdate group by 지역) order by co asc;
+3. select 사업장명, 진료과목내용명 from seoulhospital where 도로명주소 like '%금천구%';
+4. select count(*) from seoulcovid where 지역='서초구';
 5. select c.지역, co/인구*100000 , 평균가구원수, one/인구*100000
-<br/>from (select 지역, count(연번) as co <br/>from seoulcovid <br/>group by 지역 <br/>order by count(*) asc) c, seoulpopulation p 
-<br/>where c.지역=p.구분 
-<br/>order by co/인구*100000 asc;
-6. select distinct 접촉력 <br/>from seoulcovid <br/>where 접촉력 like '%서초구%';
+from (select 지역, count(연번) as co from seoulcovid group by 지역 order by count(*) asc) c, seoulpopulation p 
+where c.지역=p.구분 
+order by co/인구*100000 asc;
+6. select distinct 접촉력 from seoulcovid where 접촉력 like '%서초구%';
 7. select c.지역, co/인구*100000 , 평균가구원수, one/인구*100000
-<br/>from (select 지역, count(연번) as co <br/>from seoulcovid <br/>group by 지역 <br/>order by count(*) asc) c, seoulpopulation p 
-<br/>where c.지역=p.구분 
-<br/>order by co/인구*100000 asc;
-8. select 지역, count(*) <br/>from seoulcovid <br/>where 상태!='퇴원' <br/>group by 지역 <br/>order by count(*) asc;
+from (select 지역, count(연번) as co from seoulcovid group by 지역 order by count(*) asc) c, seoulpopulation p 
+where c.지역=p.구분 
+order by co/인구*100000 asc;
+8. select 지역, count(*) from seoulcovid where 상태!='퇴원' group by 지역 order by count(*) asc;
 9. select 구분, fatality
-<br/>from
+from
 <span style="color:red">(</span>select s.구분, cnumber/mnumber*100 as fatality
-<br/>from
+from
 <span style="color:yellow">(</span>select 구분, count(관리번호) as mnumber
-<br/>from seoulpopulation p, seoulhospital h
-<br/>where trim(substr(도로명주소,instr(도로명주소, ' ', 1, 1),instr(도로명주소, ' ', 1, 2)-instr(도로명주소, ' ', 1, 1)))=구분
-<br/>group by 구분<span style="color:yellow">)</span> s,
+from seoulpopulation p, seoulhospital h
+where trim(substr(도로명주소,instr(도로명주소, ' ', 1, 1),instr(도로명주소, ' ', 1, 2)-instr(도로명주소, ' ', 1, 1)))=구분
+group by 구분<span style="color:yellow">)</span> s,
 <span style="color:green">(</span>select 지역, count(*) as cnumber
-<br/>from seoulcovid
-<br/>where 상태!='퇴원'
-<br/>group by 지역<span style="color:green">)</span> c
-<br/>where s.구분=c.지역
-<br/>order by cnumber/mnumber*100 desc<span style="color:red">)</span>
-<br/>where rownum=1;
+from seoulcovid
+where 상태!='퇴원'
+group by 지역<span style="color:green">)</span> c
+where s.구분=c.지역
+order by cnumber/mnumber*100 desc<span style="color:red">)</span>
+where rownum=1;
 
 10. select count(*), substr(지번주소,instr(지번주소, ' ', 1, 1),instr(지번주소, ' ', 1, 2)-instr(지번주소, ' ', 1, 1)) as 구
-<br/>from seoulcovid c, (select 지번주소 from seoulrestaurant where 사업장명='일식동경') r
-<br/>where trim(substr(지번주소,instr(지번주소, ' ', 1, 1),instr(지번주소, ' ', 1, 2)-instr(지번주소, ' ', 1, 1)))=지역
-<br/>group by r.지번주소;
+from seoulcovid c, (select 지번주소 from seoulrestaurant where 사업장명='일식동경') r
+where trim(substr(지번주소,instr(지번주소, ' ', 1, 1),instr(지번주소, ' ', 1, 2)-instr(지번주소, ' ', 1, 1)))=지역
+group by r.지번주소;
 
 11. select h.도로명주소, 사업장명
-<br/>from seoulhospital h, (select 지역
-<br/>from seoulcovid
-<br/>where 접촉력 like '%먹거리 곱창전골%') c
-<br/>where trim(substr(h.도로명주소,instr(h.도로명주소, ' ', 1, 1),instr(h.도로명주소, ' ', 1, 2)-instr(h.도로명주소, ' ', 1, 1)))=c.지역;
-
+from seoulhospital h, (select 지역
+from seoulcovid
+where 접촉력 like '%먹거리 곱창전골%') c
+where trim(substr(h.도로명주소,instr(h.도로명주소, ' ', 1, 1),instr(h.도로명주소, ' ', 1, 2)-instr(h.도로명주소, ' ', 1, 1)))=c.지역;
+```
 ## 프로젝트 진행하면서 힘들었던 점
  기존에 있던 파일을 SQL파일로 변환하면서 호환성 문제가 힘들었으며  기존에 있던 데이터는 이미 정리된 데이터여서 좀 더 자유롭게 활용할 방법이 제한되었습니다. 그래서 다음 프로젝트에선 좀 더 자유롭게 생각할 수 있는 방법을 찾아보려고 합니다. 마지막으로 가상 시나리오 9번의 SQL문장을 구현하는데 어려움이 있었습니다. 혼자서 생각했으면 못 했을 부분을 Pair programming을 통해 서로 부족한 부분을 채워 어려움을 해결해 SQL문장을 구현했습니다.
