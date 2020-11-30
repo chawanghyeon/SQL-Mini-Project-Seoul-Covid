@@ -206,42 +206,73 @@ select 사업장명, 진료과목내용명
 	from seoulhospital 
 where 도로명주소 like '%금천구%';
 
-4. select count(*) from seoulcovid where 지역='서초구';
-5. select c.지역, co/인구*100000 , 평균가구원수, one/인구*100000
-from (select 지역, count(연번) as co from seoulcovid group by 지역 order by count(*) asc) c, seoulpopulation p 
+4. 
+select count(*) 
+	from seoulcovid where 지역='서초구';
+	
+5. 
+select c.지역, co/인구*100000 , 평균가구원수, one/인구*100000
+	from (
+		select 지역, count(연번) as co 
+			from seoulcovid 
+		group by 지역 order by count(*) asc
+		) c, seoulpopulation p 
+where c.지역=p.구분 
+	order by co/인구*100000 asc;
+	
+6. 
+select distinct 접촉력 
+	from seoulcovid 
+where 접촉력 like '%서초구%';
+
+7. 
+select c.지역, co/인구*100000 , 평균가구원수, one/인구*100000
+	from (
+		select 지역, count(연번) as co 
+			from seoulcovid 
+		group by 지역 order by count(*) asc
+		) c, seoulpopulation p 
 where c.지역=p.구분 
 order by co/인구*100000 asc;
-6. select distinct 접촉력 from seoulcovid where 접촉력 like '%서초구%';
-7. select c.지역, co/인구*100000 , 평균가구원수, one/인구*100000
-from (select 지역, count(연번) as co from seoulcovid group by 지역 order by count(*) asc) c, seoulpopulation p 
-where c.지역=p.구분 
-order by co/인구*100000 asc;
-8. select 지역, count(*) from seoulcovid where 상태!='퇴원' group by 지역 order by count(*) asc;
-9. select 구분, fatality
-from
-<span style="color:red">(</span>select s.구분, cnumber/mnumber*100 as fatality
-from
-<span style="color:yellow">(</span>select 구분, count(관리번호) as mnumber
-from seoulpopulation p, seoulhospital h
-where trim(substr(도로명주소,instr(도로명주소, ' ', 1, 1),instr(도로명주소, ' ', 1, 2)-instr(도로명주소, ' ', 1, 1)))=구분
-group by 구분<span style="color:yellow">)</span> s,
-<span style="color:green">(</span>select 지역, count(*) as cnumber
-from seoulcovid
-where 상태!='퇴원'
-group by 지역<span style="color:green">)</span> c
-where s.구분=c.지역
-order by cnumber/mnumber*100 desc<span style="color:red">)</span>
+
+8. 
+select 지역, count(*) 
+	from seoulcovid
+where 상태!='퇴원' 
+group by 지역 
+order by count(*) asc;
+
+
+9. 
+select 구분, fatality
+from <span style="color:red">(
+</span>select s.구분, cnumber/mnumber*100 as fatality
+	from
+		<span style="color:yellow">(</span>select 구분, count(관리번호) as mnumber
+		from seoulpopulation p, seoulhospital h
+		where trim(substr(도로명주소,instr(도로명주소, ' ', 1, 1),instr(도로명주소, ' ', 1, 2)-instr(도로명주소, ' ', 1, 1)))=구분
+		group by 구분<span style="color:yellow">)</span> s,
+	<span style="color:green">(
+		</span>select 지역, count(*) as cnumber
+			from seoulcovid
+		where 상태!='퇴원'
+		group by 지역<span style="color:green">)</span> c
+		where s.구분=c.지역
+		order by cnumber/mnumber*100 desc<span style="color:red">)</span>
 where rownum=1;
 
-10. select count(*), substr(지번주소,instr(지번주소, ' ', 1, 1),instr(지번주소, ' ', 1, 2)-instr(지번주소, ' ', 1, 1)) as 구
-from seoulcovid c, (select 지번주소 from seoulrestaurant where 사업장명='일식동경') r
+10. 
+select count(*), substr(지번주소,instr(지번주소, ' ', 1, 1),instr(지번주소, ' ', 1, 2)-instr(지번주소, ' ', 1, 1)) as 구
+	from seoulcovid c, (select 지번주소 from seoulrestaurant where 사업장명='일식동경') r
 where trim(substr(지번주소,instr(지번주소, ' ', 1, 1),instr(지번주소, ' ', 1, 2)-instr(지번주소, ' ', 1, 1)))=지역
 group by r.지번주소;
 
-11. select h.도로명주소, 사업장명
-from seoulhospital h, (select 지역
-from seoulcovid
-where 접촉력 like '%먹거리 곱창전골%') c
+11. 
+select h.도로명주소, 사업장명
+	from seoulhospital h, (
+	select 지역
+		from seoulcovid
+	where 접촉력 like '%먹거리 곱창전골%') c
 where trim(substr(h.도로명주소,instr(h.도로명주소, ' ', 1, 1),instr(h.도로명주소, ' ', 1, 2)-instr(h.도로명주소, ' ', 1, 1)))=c.지역;
 ```
 ## 프로젝트 진행하면서 힘들었던 점
