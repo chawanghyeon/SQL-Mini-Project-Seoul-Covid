@@ -10,7 +10,7 @@
 ![seoulcovid관계도](https://user-images.githubusercontent.com/53591258/100535690-82573500-325e-11eb-9535-fc8ba0805cd2.PNG)
 
 ## SQL Code
-```
+```sql
 CREATE TABLE seoulpopulation (
 인구 number (10),
 구분 varchar2 (50) constraint seoulpopulation_구분_pk primary key,
@@ -27,12 +27,12 @@ seven number (10),
 ```
 seoulpopulation table 만드는 코드입니다. table 구조는 공공데이터 구조를 기반으로 설계했습니다. seoulpopulation table은 각 구별 인구를 나타내는 table이기 때문에 구를 나타내는 구분을 primary key로 설정했습니다.
 
-```
+```sql
 INSERT INTO seoulpopulation(인구,구분,일반가구수,one,two,three,four,five,six,seven,평균가구원수) VALUES (159842, '종로구',62652,24671,16208,11154,7828,2143,505,143,2.2);
 ```
-seoulpopulation table INSERT 문장 예시
+seoulpopulation table INSERT 문장 예시입니다.
 
-```
+```sql
 CREATE TABLE seoulcovid (
 연번 INT primary key,
 확진일 varchar2 (50) ,
@@ -52,12 +52,12 @@ CREATE TABLE seoulcovid (
 ```
 seoulcovid table 만드는 코드입니다. table 구조는 공공데이터 기반으로 설계했습니다. seoulcovid table은 환자에 대한 정보를 나타내는 table입니다. 환자 번호를 primary key로 설정하고 싶었지만 공공데이터에 null값으로 저장되어 있어 연번을 primary key로 설정했습니다. 지역을 seloulpopulation(구분)에서 키를 받아오는 foreign key로 설정했습니다.
 
-```
+```sql
 INSERT INTO seoulcovid(연번,확진일,환자번호,국적,환자정보,지역,여행력,접촉력,조치사항,상태,이동경로,등록일,수정일,노출여부) VALUES (7900,'11.24.',NULL,NULL,NULL,'강서구',NULL,'기타 확진자 접촉',NULL,NULL,NULL,'2020-11-25 10:18:53','2020-11-25 10:18:53','Y');
 ```
-seoulcovid table INSERT 문장 예시
+seoulcovid table INSERT 문장 예시입니다.
 
-```
+```sql
 CREATE TABLE seoulhospital(
    개방자치단체코드  number (38)  NOT NULL,
    관리번호      varchar2 (100) constraint seoulhospital_관리번호_pk primary key,
@@ -103,12 +103,12 @@ CREATE TABLE seoulhospital(
 );
 ```
 seoulhospital table 만드는 코드입니다. table 구조는 공공데이터 기반으로 설계했습니다. 각 병원을 나타내는 관리번호를 primary key로 설정했습니다. 그리고 반드시 있어야 하는 데이터들을 NOT NULL로 제약조건을 명시했습니다.
-```
+```sql
 INSERT INTO seoulhospital(개방자치단체코드,관리번호,인허가일자,인허가취소일자,영업상태코드,영업상태명,상세영업상태코드,상세영업상태명,폐업일자,휴업시작일자,휴업종료일자,재개업일자,전화번호,소재지면적,소재지우편번호,지번주소,도로명주소,도로명우편번호,사업장명,최종수정일자,데이터갱신구분,데이터갱신일자,업태구분명,좌표정보X,좌표정보Y,의료기관종별명,의료인수,입원실수,병상수,총면적,진료과목내용,진료과목내용명,지정취소일자,완화의료지정형태,완화의료담당부서명,구급차특수,구급차일반,총인원,구조사수,허가병상수,최초지정일자) VALUES (3000000,'PHMA220083000034021200001','20080624',NULL,03,'폐업',03,'폐업','20181001',NULL,NULL,NULL,'02-766-2004',NULL,110808,'서울특별시 종로구 돈의동 78번지','서울특별시 종로구 돈화문로9길 26 (돈의동)',03139,'춘원당한방병원',20181001134047,'U','2018-10-03 02:35:18.0','한방병원',199079.009091626,452168.088676879,'한방병원',8,7,31,2182.81,'301 303 304 305 306 307 308 302','한방부인과 침구과 사상체질과 한방재활의학과 한방신경정신과 한방안?이비인후?피부과 한방소아과 한방내과',NULL,NULL,NULL,0,0,NULL,NULL,0,NULL);
 ```
 seoulhospital table INSERT 문장 예시입니다.
 
-```
+```sql
 CREATE TABLE seoulrestaurant(
    개방자치단체코드  number (38)
   ,관리번호      varchar2 (100) primary key
@@ -157,7 +157,7 @@ CREATE TABLE seoulrestaurant(
 );
 ```
 seoulrestaurant table 만드는 코드입니다. 테이블 구조는 공공데이터 기반으로 설계했습니다. 관리번호를 primary key로 설정하고 반드시 존재해야 하는 데이터는 NOT NULL로 명시했습니다.
-```
+```sql
 INSERT INTO seoulrestaurant(개방자치단체코드,관리번호,인허가일자,인허가취소일자,영업상태코드,영업상태명,상세영업상태코드,상세영업상태명,폐업일자,휴업시작일자,휴업종료일자,재개업일자,전화번호,소재지면적,소재지우편번호,지번주소,도로명주소,도로명우편번호,사업장명,최종수정일자,데이터갱신구분,데이터갱신일자,업태구분명,좌표정보X,좌표정보Y,위생업태명,남성종사자수,여성종사자수,영업장주변구분명,등급구분명,급수시설구분명,총인원,본사종업원수,공장사무직종업원수,공장판매직종업원수,공장생산직종업원수,건물소유구분명,보증액,월세액,다중이용업소여부,시설총규모,전통업소지정번호,전통업소주된음식,홈페이지) VALUES (3000000,'3000000-101-2001-11784',20010214,NULL,01,'영업/정상',01,'영업',NULL,NULL,NULL,NULL,'02 7372230',NULL,110061,'서울특별시 종로구 신문로1가 166-2번지',NULL,NULL,'일식동경',20090102100019,'I','2018-08-31 23:59:59.0','일식',NULL,NULL,'일식',0,0,'기타','우수',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'N',34.56,NULL,NULL,NULL);
 ```
 seoulrestaurant table INSERT 문장 예시입니다.
@@ -184,7 +184,7 @@ seoulrestaurant table INSERT 문장 예시입니다.
 
 
 ## 답
-```
+```sql
 1. select * 
    from (select 지역, count(*) 
          from seoulcovid 
