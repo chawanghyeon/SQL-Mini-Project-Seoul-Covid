@@ -245,20 +245,19 @@ order by count(*) asc;
 
 9. 
 select 구분, fatality
-from <span style="color:red">(
-</span>select s.구분, cnumber/mnumber*100 as fatality
-	from
-		<span style="color:yellow">(</span>select 구분, count(관리번호) as mnumber
-		from seoulpopulation p, seoulhospital h
+	from(
+	select s.구분, cnumber/mnumber*100 as fatality
+		from(
+		select 구분, count(관리번호) as mnumber
+			from seoulpopulation p, seoulhospital h
 		where trim(substr(도로명주소,instr(도로명주소, ' ', 1, 1),instr(도로명주소, ' ', 1, 2)-instr(도로명주소, ' ', 1, 1)))=구분
-		group by 구분<span style="color:yellow">)</span> s,
-	<span style="color:green">(
-		</span>select 지역, count(*) as cnumber
-			from seoulcovid
-		where 상태!='퇴원'
-		group by 지역<span style="color:green">)</span> c
+		group by 구분) s,(
+	select 지역, count(*) as cnumber
+		from seoulcovid
+	where 상태!='퇴원'
+	group by 지역) c
 		where s.구분=c.지역
-		order by cnumber/mnumber*100 desc<span style="color:red">)</span>
+	order by cnumber/mnumber*100 desc)
 where rownum=1;
 
 10. 
