@@ -191,18 +191,22 @@ seoulrestaurant table INSERT 문장 예시입니다.
          group by 지역 
          order by count(*) asc) 
    where rownum=1;
+   
 2. select * 
    from (select 지역, count(*) as co 
          from seoulcovid 
          where 확진일 between sysdate - 10 and sysdate 
          group by 지역) 
    order by co asc;
+   
 3. select 사업장명, 진료과목내용명 
    from seoulhospital 
    where 도로명주소 like '%금천구%';
+   
 4. select count(*) 
    from seoulcovid 
    where 지역='서초구';
+   
 5. select c.지역, co/인구*100000 , 평균가구원수, one/인구*100000
    from (select 지역, count(연번) as co 
          from seoulcovid 
@@ -210,9 +214,11 @@ seoulrestaurant table INSERT 문장 예시입니다.
          order by count(*) asc) c, seoulpopulation p 
    where c.지역=p.구분 
    order by co/인구*100000 asc;
+   
 6. select distinct 접촉력 
    from seoulcovid
    where 접촉력 like '%서초구%';
+   
 7. select c.지역, co/인구*100000 , 평균가구원수, one/인구*100000
    from (select 지역, count(연번) as co 
          from seoulcovid 
@@ -220,11 +226,13 @@ seoulrestaurant table INSERT 문장 예시입니다.
 	 order by count(*) asc) c, seoulpopulation p 
    where c.지역=p.구분 
    order by co/인구*100000 asc;
+   
 8. select 지역, count(*) 
    from seoulcovid 
    where 상태!='퇴원' 
    group by 지역 
    order by count(*) asc;
+   
 9. select 구분, fatality
    from(select s.구분, cnumber/mnumber*100 as fatality
         from(select 구분, count(관리번호) as mnumber
@@ -251,6 +259,7 @@ seoulrestaurant table INSERT 문장 예시입니다.
          from seoulcovid
          where 접촉력 like '%먹거리 곱창전골%') c
     where trim(substr(h.도로명주소,instr(h.도로명주소, ' ', 1, 1),instr(h.도로명주소, ' ', 1, 2)-instr(h.도로명주소, ' ', 1, 1)))=c.지역;
+    
 ```
 
 ## 프로젝트 진행하면서 힘들었던 점
