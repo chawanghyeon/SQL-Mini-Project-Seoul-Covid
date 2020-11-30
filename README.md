@@ -192,8 +192,20 @@ select *
 		group by 지역 
 		order by count(*) asc) 
 where rownum=1;
-2. select * from (select 지역, count(*) as co from seoulcovid where 확진일 between sysdate - 10 and sysdate group by 지역) order by co asc;
-3. select 사업장명, 진료과목내용명 from seoulhospital where 도로명주소 like '%금천구%';
+2. 
+select * 
+	from (
+		select 지역, count(*) as co 
+			from seoulcovid 
+		where 확진일 between sysdate - 10 and sysdate group by 지역
+		) 
+order by co asc;
+
+3. 
+select 사업장명, 진료과목내용명 
+	from seoulhospital 
+where 도로명주소 like '%금천구%';
+
 4. select count(*) from seoulcovid where 지역='서초구';
 5. select c.지역, co/인구*100000 , 평균가구원수, one/인구*100000
 from (select 지역, count(연번) as co from seoulcovid group by 지역 order by count(*) asc) c, seoulpopulation p 
