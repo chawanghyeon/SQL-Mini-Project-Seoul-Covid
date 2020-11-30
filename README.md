@@ -6,7 +6,7 @@
 ## SQL Data
  SQL 프로젝트를 진행하려면 데이터가 있어야 합니다. 재웅님이 코로나 관련 프로젝트를 진행하는 거니까 가상 데이터를 만들지 말고 실제로 있는 데이터를 사용해보는 것이 어떻겠냐고 제안하셔서 [공공데이터 포탈](https://www.data.go.kr/)을 사용하여 데이터를 수집했습니다. 데이터를 API를 통해 실시간으로 Json포맷을 받는 것은 테이블을 만들려는 저희의 의도와 맞지 않다고 판단해 데이터 파일을 다운받아 sql포맷으로 변환했습니다.
 
-## 
+## 구조
 ![seoulcovid관계도](https://user-images.githubusercontent.com/53591258/100535690-82573500-325e-11eb-9535-fc8ba0805cd2.PNG)
 
 ## SQL Code
@@ -181,7 +181,7 @@ seoulrestaurant table INSERT 문장 예시입니다.
 코로나지만 식당에 가고싶은 D씨.  
 10.가고자 하는 식당의 지역에 확진자가 어느정도 있는지 알고싶다.  
 11.혹시나 해서 갔던 식당(먹거리 곱창전골)이 확진자가 나왔던 곳인지 알고싶은 D씨.  
-12. 내 취향의 음식을 먹으러 가는데 이왕 가는거 확진자가 가장 적은 구로 가보고싶은 D씨. 어느 구로 가면 좋을까?
+
 
 ## 답
 1. select * <br/>from (select 지역, count(*) <br/>from seoulcovid <br/>group by 지역 <br/>order by count(*) asc) <br/>where rownum=1;
@@ -224,15 +224,6 @@ from seoulhospital h, (select 지역
 from seoulcovid
 where 접촉력 like '%먹거리 곱창전골%') c
 where trim(substr(h.도로명주소,instr(h.도로명주소, ' ', 1, 1),instr(h.도로명주소, ' ', 1, 2)-instr(h.도로명주소, ' ', 1, 1)))=c.지역;
-
-12. select * 
-from seoulrestaurant r
-where trim(substr(r.도로명주소,instr(r.도로명주소, ' ', 1, 1),instr(r.도로명주소, ' ', 1, 2)-instr(r.도로명주소, ' ', 1, 1)))=(select 지역
-from (select 지역, count(*) 
-from seoulcovid 
-group by 지역 
-order by count(*) asc)
-where rownum=1) and (select 취향 from seouluser where 이름='D씨')=r.업태구분명;
 
 ## 프로젝트 진행하면서 힘들었던 점
  기존에 있던 파일을 SQL파일로 변환하면서 호환성 문제가 힘들었으며  기존에 있던 데이터는 이미 정리된 데이터여서 좀 더 자유롭게 활용할 방법이 제한되었습니다. 그래서 다음 프로젝트에선 좀 더 자유롭게 생각할 수 있는 방법을 찾아보려고 합니다. 마지막으로 가상 시나리오 9번의 SQL문장을 구현하는데 어려움이 있었습니다. 혼자서 생각했으면 못 했을 부분을 Pair programming을 통해 서로 부족한 부분을 채워 어려움을 해결해 SQL문장을 구현했습니다.
